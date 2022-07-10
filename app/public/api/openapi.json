@@ -1,0 +1,494 @@
+openapi: 3.0.0
+info:
+  title: uae-test
+  version: 1.0.0
+servers:
+- url: http://3.142.52.142:777
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    noauthAuth:
+      type: http
+      scheme: noauth
+tags:
+  - name: auth
+  - name: currency
+  - name: transaction
+paths:
+  /api/auth/sign-up:
+    post:
+      tags:
+        - auth
+      summary: sing-up
+      description: |-
+        **Регистрация нового пользователя**
+
+        *   создается аккаунт
+        *   создается пустой кошелек
+        *   создается токен для доступа к данным
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'required '
+                  example: Test
+                email:
+                  type: string
+                  description: required
+                  example: test2@test.ru
+                password:
+                  type: string
+                  description: required
+                  example: Test123
+                password_confirmation:
+                  type: string
+                  description: required
+                  example: Test123
+                currency:
+                  type: string
+                  description: required | валюта для кошелька|доступные варианты:USD,RU
+                  example: USD
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Server:
+              schema:
+                type: number
+                example: nginx/1.23.0
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            X-Powered-By:
+              schema:
+                type: number
+                example: PHP/8.1.7
+            Cache-Control:
+              schema:
+                type: string
+                example: no-cache, private
+            Date:
+              schema:
+                type: string
+                example: Tue, 05 Jul 2022 23:01:36 GMT
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+                example: '60'
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+                example: '57'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                token:
+                  access_token: 1|0ZkMe23lDSye9vId9Be9TJc2a6ym2plPktc8ie3p
+                  type: Bearer
+                  expires_in: unlimited
+                data:
+                  id: 2
+                  email: test@test.ru
+                  name: Test
+        '422':
+          description: Unprocessable Content
+          headers:
+            Server:
+              schema:
+                type: number
+                example: nginx/1.23.0
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            X-Powered-By:
+              schema:
+                type: number
+                example: PHP/8.1.7
+            Cache-Control:
+              schema:
+                type: string
+                example: no-cache, private
+            Date:
+              schema:
+                type: string
+                example: Tue, 05 Jul 2022 22:59:00 GMT
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+                example: '60'
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+                example: '58'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                message: The name field is required. (and 3 more errors)
+                errors:
+                  name:
+                    - The name field is required.
+                  email:
+                    - The email field is required.
+                  password:
+                    - The password field is required.
+                  currency_id:
+                    - The currency id field is required.
+  /api/auth/sign-in:
+    post:
+      tags:
+        - auth
+      summary: sing-in
+      description: Вход в приложение
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: required
+                  example: test@test.ru
+                password:
+                  type: string
+                  description: required
+                  example: Test123
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Server:
+              schema:
+                type: number
+                example: nginx/1.23.0
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            X-Powered-By:
+              schema:
+                type: number
+                example: PHP/8.1.7
+            Cache-Control:
+              schema:
+                type: string
+                example: no-cache, private
+            Date:
+              schema:
+                type: string
+                example: Tue, 05 Jul 2022 23:15:49 GMT
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+                example: '60'
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+                example: '53'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                token:
+                  access_token: 4|XREGJQlK6fNhOOw5RrNY5dSbQCf0BniHlpOLzEaE
+                  type: Bearer
+                  expires_in: unlimited
+                data:
+                  id: 2
+                  email: test@test.ru
+                  name: Test
+  /api/auth/sign-out:
+    post:
+      tags:
+        - auth
+      summary: sing-out
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Server:
+              schema:
+                type: number
+                example: nginx/1.23.0
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            X-Powered-By:
+              schema:
+                type: number
+                example: PHP/8.1.7
+            Cache-Control:
+              schema:
+                type: string
+                example: no-cache, private
+            Date:
+              schema:
+                type: string
+                example: Wed, 06 Jul 2022 00:19:01 GMT
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+                example: '60'
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+                example: '59'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: null
+  /api/currencies:
+    get:
+      tags:
+        - currency
+      summary: index
+      description: Список всех доступных валют
+      responses:
+        '200':
+          description: OK
+          headers:
+            Server:
+              schema:
+                type: number
+                example: nginx/1.23.0
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            X-Powered-By:
+              schema:
+                type: number
+                example: PHP/8.1.7
+            Cache-Control:
+              schema:
+                type: string
+                example: no-cache, private
+            Date:
+              schema:
+                type: string
+                example: Wed, 06 Jul 2022 00:29:02 GMT
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+                example: '60'
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+                example: '58'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  - id: 1
+                    code: USD
+                  - id: 2
+                    code: RUB
+  /api/transactions:
+    get:
+      tags:
+        - transaction
+      summary: index
+      description: Список всех активных транзакций
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    post:
+      tags:
+        - transaction
+      summary: store
+      description: Новая транзакция
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: 'required | тип: debit, credit'
+                  example: debit
+                reason:
+                  type: string
+                  description: required | причина :stock, refund
+                  example: stock
+                value:
+                  type: integer
+                  description: required | количество единиц валюты
+                  example: '44'
+                currency:
+                  type: string
+                  description: required | код валюты:USD,RUB
+                  example: RUB
+                email:
+                  type: string
+                  description: >-
+                    email получателя (выдается только зарегестрированным в
+                    системе пользователям)
+                  example: admin@admin.com
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/transactions/graph:
+    get:
+      tags:
+        - transaction
+      summary: graph
+      description: Данные для отрисовки графика
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}

@@ -1,0 +1,168 @@
+version: '3.7'
+
+services:
+
+  nginx:
+    image: 711770257294.dkr.ecr.us-east-2.amazonaws.com/uae-test-app-nginx:latest
+    container_name: uae-test-app-nginx
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./app/:/var/www/
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - app
+      - db
+      - redis
+
+
+  app:
+    image: 711770257294.dkr.ecr.us-east-2.amazonaws.com/uae-test-app:latest
+    container_name: uae-test-app
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    restart: unless-stopped
+    extra_hosts:
+      - "internal.host:host-gateway"
+    environment:
+      DB_HOST: db
+      DB_DATABASE: uae-test-app
+      DB_USERNAME: root
+      DB_PASSWORD: example
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      BROADCAST_DRIVER: pusher
+      PUSHER_APP_ID: 1434478
+      PUSHER_APP_KEY: 2e1d01f9cbee33fdd24e
+      PUSHER_APP_SECRET: 1accec8e2fa5396ac3e6
+      PUSHER_APP_CLUSTER: eu
+    #volumes:
+      #- ./app/:/var/www/
+    depends_on:
+      - db
+      - redis
+
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: uae-test-swagger-ui
+    ports:
+      - "8082:8080"
+    #volumes:
+     # - ./docker/swagger-ui/openapi.json:/openapi.json
+    environment:
+      #SWAGGER_JSON: /openapi.json
+      API_URL: "http://localhost/api/openapi.json" #inside the app container with cors full access
+
+  #DONE
+  redis:
+    container_name: uae-test-redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - redis-vol:/data
+#    healthcheck:
+#      test: redis-cli -h redis -p 6379 ping
+#      start_period: 3s
+#      interval: 2s
+#      timeout: 2s
+#      retries: 10
+
+  #DONE
+  db:
+    container_name: uae-test-mysql
+    image: mysql:latest
+    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+    # (this is just an example, not intended to be a production configuration)
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_DATABASE: uae-test-app
+      MYSQL_ROOT_PASSWORD: example
+    ports:
+      - 7725:3306
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  #DONE
+  phpmyadmin:
+    container_name: uae-test-phpmyadmin
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+
+  #DONE
+  horizon:
+    container_name: uae-test-horizon
+    image: 711770257294.dkr.ecr.us-east-2.amazonaws.com/uae-test-horizon:latest
+    build:
+      context: .
+      dockerfile: ./docker/horizon/Dockerfile
+    environment:
+      DB_HOST: db
+      DB_DATABASE: uae-test-app
+      DB_USERNAME: root
+      DB_PASSWORD: example
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
+    restart: unless-stopped
+    volumes:
+      - ./app/:/var/www/
+    depends_on:
+      - db
+      - redis
+
+
+
+
+#  laravel-echo-server:
+#    container_name: uae-test-laravel-echo-server
+#    image: oanhnn/laravel-echo-server:latest
+#    depends_on:
+#      - redis
+#    environment:
+#      LARAVEL_ECHO_SERVER_AUTH_HOST: http://localhost
+#      LARAVEL_ECHO_SERVER_DEBUG: 'true'
+#      LARAVEL_ECHO_SERVER_DB: redis
+##      LARAVEL_ECHO_SERVER_PORT: "6001"
+##      LARAVEL_ECHO_SERVER_HOST: NULL
+##      LARAVEL_ECHO_SERVER_PROTO: 'http'
+##      LARAVEL_ECHO_SERVER_REDIS_HOST: "redis"
+##      LARAVEL_ECHO_SERVER_REDIS_PORT: "6379"
+#      REDIS_HOST: redis
+#      REDIS_PORT: 6379
+#      REDIS_PASSWORD: NULL
+#      REDIS_PREFIX: "laravel_database_"
+#      REDIS_DB: 0
+#    ports:
+#      - "6001:6001"
+#    restart: unless-stopped
+##    healthcheck:
+##      test: node /usr/local/app/healthcheck.js
+##      start_period: 5s
+##      interval: 3s
+##      timeout: 3s
+##      retries: 10
+
+
+
+volumes:
+  dbdata:
+    driver: local
+  sqlite-vol: {}
+  redis-vol: {}
+
