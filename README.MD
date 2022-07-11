@@ -71,7 +71,7 @@ password: bill@moderator.com
 Видеопрезентация:
 -------------------------
 
-- https:/youtube.com
+- https://youtu.be/APpZLyMw5Z4
 
 Интрукция для развертрываения проекта
 ------------------------
