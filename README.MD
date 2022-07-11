@@ -80,3 +80,15 @@ password: bill@moderator.com
 
 Запустите консольную команду для развретываения проекта на локальном ПК:
 > make start 
+
+Доп. задание:
+----------------------
+
+Написать SQL запрос, который вернет сумму, полученную по причине refund за последние 7 дней:
+
+`
+SELECT SUM(`value`) as sum
+FROM `transactions`
+WHERE `reason_for_change`='refund'
+AND `created_at` > now() - interval 1 week;
+`
