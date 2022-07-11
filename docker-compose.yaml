@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
 
+  #DONE
   nginx:
     image: 711770257294.dkr.ecr.us-east-2.amazonaws.com/uae-test-app-nginx:latest
     container_name: uae-test-app-nginx
@@ -19,7 +20,7 @@ services:
       - db
       - redis
 
-
+  #DONE
   app:
     image: 711770257294.dkr.ecr.us-east-2.amazonaws.com/uae-test-app:latest
     container_name: uae-test-app
@@ -49,7 +50,7 @@ services:
       - db
       - redis
 
-
+  #DONE
   swagger-ui:
     image: swaggerapi/swagger-ui
     container_name: uae-test-swagger-ui
@@ -125,6 +126,32 @@ services:
     depends_on:
       - db
       - redis
+
+
+
+  #DONE
+  cron:
+    container_name: uae-test-cron
+    image: 711770257294.dkr.ecr.us-east-2.amazonaws.com/uae-test-cron:latest
+    build:
+      context: .
+      dockerfile: ./docker/cron/Dockerfile
+    environment:
+      DB_HOST: db
+      DB_DATABASE: uae-test-app
+      DB_USERNAME: root
+      DB_PASSWORD: example
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
+    restart: unless-stopped
+    volumes:
+      - ./app/:/var/www/
+    depends_on:
+      - db
+      - redis
+
 
 
 

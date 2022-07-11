@@ -1,2 +1,0 @@
-* * * * * echo "Hello world" >> /var/log/cron.log 2>&1
-# remember to end this file with an empty new line
